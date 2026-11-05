@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Panel · Galerías</title>
+<link rel="icon" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,400&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --bg: #f6f3f0; --ink: #1c1a14; --muted: #6f655a; --line: rgba(54,37,22,.16); --teal: #224241; --teal2: #1a3534; --cream: #ebe6e2; --gold: #c79a71; --gold2: #ac946c; --red: #b5443f; --green: #2f7d4f; --serif: 'Cormorant Garamond', Georgia, serif; --sans: 'Montserrat', system-ui, sans-serif; }
+  * { box-sizing: border-box; margin: 0; }
+  body { background: var(--bg); color: var(--ink); font: 14px/1.55 var(--sans); }
+  a { color: inherit; }
+  button { font: inherit; color: inherit; cursor: pointer; }
+  .top { display: flex; justify-content: space-between; align-items: center; padding: 14px clamp(16px, 4vw, 40px); border-bottom: 1px solid var(--line); background: #fff; position: sticky; top: 0; z-index: 3; }
+  .top .brand { font-family: var(--serif); font-size: 24px; font-weight: 600; }
+  .top nav { display: flex; gap: 8px; align-items: center; }
+  main { max-width: 1000px; margin: 0 auto; padding: 28px clamp(16px, 4vw, 40px) 80px; }
+  .head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 18px; }
+  h1 { font-family: var(--serif); font-size: 36px; font-weight: 600; }
+  .btn { padding: 8px 16px; border: 1px solid #d9d2c8; border-radius: 999px; background: #fff; text-decoration: none; font-size: 14px; white-space: nowrap; }
+  .btn:hover { border-color: var(--ink); }
+  .btn.primary { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .btn.danger { color: var(--red); }
+  .btn:disabled { opacity: .55; cursor: default; }
+
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; margin-bottom: 12px; display: grid; gap: 10px; }
+  .card.off { opacity: .65; }
+  .card h3 { font-size: 18px; font-weight: 600; }
+  .meta { color: var(--muted); font-size: 14px; }
+  .linkrow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 14px; }
+  .linkrow a { color: var(--ink); font-weight: 500; word-break: break-all; }
+  .tags { display: flex; gap: 6px; flex-wrap: wrap; }
+  .tag { font-size: 12px; padding: 2px 10px; border-radius: 999px; background: #f1ece5; color: var(--muted); }
+  .tag.heart { background: #fde8e9; color: var(--red); }
+  .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+  .empty { text-align: center; color: var(--muted); padding: 48px 12px; }
+
+  dialog { border: 0; border-radius: 16px; padding: 0; width: min(560px, calc(100% - 24px)); max-height: calc(100svh - 24px); box-shadow: 0 20px 60px rgba(0,0,0,.25); }
+  dialog.wide { width: min(860px, calc(100% - 24px)); }
+  dialog::backdrop { background: rgba(0,0,0,.45); }
+  .dlg { padding: 24px; display: grid; gap: 14px; }
+  .dlg h2 { font-family: var(--serif); font-size: 30px; font-weight: 600; }
+  label { display: grid; gap: 5px; font-size: 13px; font-weight: 500; }
+  label small { font-weight: 400; color: var(--muted); }
+  input[type=text], input[type=date], select { font: inherit; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; width: 100%; background: #fff; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 520px) { .row2 { grid-template-columns: 1fr; } }
+  .inline { display: flex; gap: 8px; }
+  .inline input { flex: 1; min-width: 0; }
+  .slug { display: flex; align-items: center; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: #fff; }
+  .slug span { padding: 10px 0 10px 12px; color: var(--muted); white-space: nowrap; font-weight: 400; }
+  .slug input { border: 0; border-radius: 0; padding-left: 2px; }
+  .check { display: flex; gap: 10px; align-items: flex-start; font-weight: 400; }
+  .check input { margin-top: 4px; }
+  .status { font-size: 13px; min-height: 18px; }
+  .status.ok { color: var(--green); } .status.bad { color: var(--red); }
+  .foot { display: flex; justify-content: flex-end; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .foot .err { color: var(--red); font-size: 13px; margin-right: auto; }
+
+  .person { border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+  .person header { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .person h4 { text-transform: capitalize; font-size: 16px; }
+  .person h4 span { text-transform: none; font-weight: 400; color: var(--muted); }
+  h5 { font-size: 14px; margin: 6px 0 -6px; }
+  .thumbs { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .t { position: relative; width: 96px; height: 96px; background: #ebe6df; border-radius: 4px; overflow: hidden; font-size: 11px; }
+  .t img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .t span { position: absolute; left: 4px; bottom: 4px; background: rgba(0,0,0,.55); color: #fff; padding: 1px 6px; border-radius: 999px; max-width: calc(100% - 8px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .t b { position: absolute; right: 4px; top: 4px; background: var(--red); color: #fff; padding: 1px 7px; border-radius: 999px; }
+
+  .toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px); background: var(--ink); color: #fff; padding: 10px 18px; border-radius: 999px; font-size: 14px; opacity: 0; pointer-events: none; transition: .3s; z-index: 50; }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  /* Estilo de marca: verde azulado, crema y dorado (igual que la página principal) */
+  .top { background: var(--teal); color: #fff; border-bottom: 0; }
+  .top .brand { font-size: 28px; letter-spacing: .04em; }
+  .top .brand::before { content: ""; display: inline-block; width: 150px; height: 36px; margin-right: 14px; vertical-align: middle; background: url(/logo.jpg) 0 -59px / 150px 150px no-repeat; }
+  .top .brand { display: flex; align-items: center; font-size: 12px; letter-spacing: .3em; text-transform: uppercase; color: var(--gold); }
+  .top .btn { background: transparent; color: #fff; border-color: rgba(255,255,255,.35); }
+  .top .btn:hover { border-color: var(--gold); color: var(--gold); }
+  h1, .dlg h2 { color: var(--teal); }
+  .btn { border-radius: 2px; border-color: rgba(54,37,22,.25); font-size: 11px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; padding: 10px 18px; }
+  .btn:hover { border-color: var(--teal); color: var(--teal); }
+  .btn.primary { background: var(--gold); border-color: var(--gold); color: var(--ink); }
+  .btn.primary:hover { background: var(--teal); border-color: var(--teal); color: #fff; }
+  .card { border-radius: 2px; border-left: 3px solid var(--gold); }
+  .card h3 { font-family: var(--serif); font-size: 24px; font-weight: 600; color: var(--teal); }
+  .tag { background: var(--cream); border-radius: 2px; }
+  .linkrow a { color: var(--teal); }
+  dialog { border-radius: 2px; }
+  input[type=text], input[type=date], select, .slug { border-radius: 2px; }
+  input:focus, select:focus { outline: 2px solid var(--gold); outline-offset: -1px; }
+  .person { border-radius: 2px; } .t { border-radius: 2px; }
+  .toast { background: var(--teal); border-radius: 2px; }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand">Panel</div>
+  <nav>
+    <a class="btn" href="/" target="_blank" rel="noopener">Ver sitio</a>
+    <button class="btn" id="logout">Salir</button>
+  </nav>
+</header>
+
+<main>
+  <div class="head">
+    <h1>Galerías</h1>
+    <button class="btn primary" id="new">+ Nueva galería</button>
+  </div>
+  <div id="list"><div class="empty">Cargando…</div></div>
+</main>
+
+<!-- crear / editar -->
+<dialog id="dlg">
+  <form class="dlg" id="form" autocomplete="off">
+    <h2 id="dlgTitle">Nueva galería</h2>
+
+    <label>Título
+      <input type="text" id="title" maxlength="120" placeholder="Cumple de César" required>
+    </label>
+
+    <div class="row2">
+      <label>Tipo de evento <small>(opcional)</small>
+        <input type="text" id="subtitle" maxlength="60" list="kinds" placeholder="Cumpleaños">
+        <datalist id="kinds"><option>Casamiento</option><option>Cumpleaños</option><option>15 años</option><option>Egreso</option><option>Bautismo</option><option>Evento</option></datalist>
+      </label>
+      <label>Fecha <small>(opcional)</small>
+        <input type="date" id="date">
+      </label>
+    </div>
+
+    <label>Link de la carpeta de Drive
+      <div class="inline">
+        <input type="text" id="link" placeholder="https://drive.google.com/drive/folders/…" required>
+        <button type="button" class="btn" id="verify">Verificar</button>
+      </div>
+      <span class="status" id="status"></span>
+    </label>
+
+    <label>Dirección que recibe el cliente
+      <div class="slug"><span id="host"></span><input type="text" id="slug" maxlength="60" placeholder="cumpledecesar" required></div>
+      <small id="slugHint">Solo letras y números. Después de crearla no se puede cambiar, porque rompería el link.</small>
+    </label>
+
+    <label class="check"><input type="checkbox" id="selections">
+      <span>Permitir que los invitados marquen <b>favoritas</b> (♥)<br><small>Úsalo cuando necesites que elijan fotos, por ejemplo para un fotolibro. Si lo dejás apagado no se guarda nada de lo que hagan.</small></span>
+    </label>
+
+    <div class="row2">
+      <label>Orden de las fotos
+        <select id="sort"><option value="name">Por número de archivo</option><option value="time">Por hora en que se sacó</option></select>
+      </label>
+      <label>Foto de portada <small>(opcional)</small>
+        <input type="text" id="cover" maxlength="120" placeholder="IMG_0042.jpg">
+      </label>
+    </div>
+
+    <label class="check"><input type="checkbox" id="active" checked>
+      <span>Galería visible<br><small>Si la apagás, el link deja de funcionar (vos la seguís viendo al ingresar) y no se borra nada.</small></span>
+    </label>
+
+    <div class="foot">
+      <span class="err" id="formErr" role="alert"></span>
+      <button type="button" class="btn" id="cancel">Cancelar</button>
+      <button class="btn primary" id="save">Guardar</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- elecciones -->
+<dialog id="sel" class="wide">
+  <div class="dlg">
+    <h2 id="selTitle">Favoritas</h2>
+    <div id="selBody">Cargando…</div>
+    <div class="foot">
+      <button class="btn danger" id="selClear">Borrar elecciones</button>
+      <a class="btn" id="selCsv" href="#">Descargar CSV</a>
+      <button class="btn" id="selClose">Cerrar</button>
+    </div>
+  </div>
+</dialog>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  const $ = (s) => document.querySelector(s);
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const code = (name) => name.replace(/\.[^.]+$/, '');
+  const slugify = (s) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '').slice(0, 60);
+  const fmtDate = (iso) => (iso ? new Date(`${iso}T12:00:00`).toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric' }) : '');
+  const driveLink = (id) => `https://drive.google.com/drive/folders/${id}`;
+
+  function toast(msg) {
+    const t = $('#toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2200);
+  }
+
+  async function api(path, { method = 'GET', body } = {}) {
+    const res = await fetch(`/admin/api${path}`, { method, headers: body ? { 'Content-Type': 'application/json' } : {}, body: body ? JSON.stringify(body) : undefined });
+    if (res.status === 401) { location.href = '/admin/login'; throw new Error('Sesión vencida'); }
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.message || 'Algo salió mal.');
+    return data;
+  }
+
+  /* ---------- listado ---------- */
+  let events = [];
+
+  async function load() {
+    try { events = (await api('/events')).events; } catch (e) { $('#list').innerHTML = `<div class="empty">${esc(e.message)}</div>`; return; }
+    render();
+  }
+
+  function render() {
+    if (!events.length) { $('#list').innerHTML = '<div class="empty">Todavía no hay galerías. Creá la primera con “Nueva galería”.</div>'; return; }
+    $('#list').innerHTML = events.map((e) => `
+      <article class="card ${e.active ? '' : 'off'}" data-slug="${esc(e.slug)}">
+        <div>
+          <h3>${esc(e.title)}</h3>
+          <div class="meta">${[e.subtitle, fmtDate(e.date)].filter(Boolean).map(esc).join(' · ') || '&nbsp;'}</div>
+        </div>
+        <div class="linkrow">
+          <a href="/${esc(e.slug)}" target="_blank" rel="noopener">${esc(location.host)}/${esc(e.slug)}</a>
+          <button class="btn" data-act="copy">Copiar link</button>
+        </div>
+        <div class="tags">
+          ${e.demo ? '<span class="tag">Ejemplo</span>' : ''}
+          ${e.active ? '' : '<span class="tag">Oculta</span>'}
+          ${e.selections ? `<span class="tag heart">♥ Favoritas · ${e.people} ${e.people === 1 ? 'persona' : 'personas'} · ${e.picks} ${e.picks === 1 ? 'elección' : 'elecciones'}</span>` : ''}
+        </div>
+        <div class="actions">
+          <a class="btn" href="/${esc(e.slug)}" target="_blank" rel="noopener">Ver</a>
+          <button class="btn" data-act="edit">Editar</button>
+          ${e.selections ? '<button class="btn" data-act="picks">Ver elecciones</button>' : ''}
+          <button class="btn danger" data-act="delete">Eliminar</button>
+        </div>
+      </article>`).join('');
+  }
+
+  $('#list').addEventListener('click', async (ev) => {
+    const btn = ev.target.closest('[data-act]');
+    if (!btn) return;
+    const event = events.find((e) => e.slug === btn.closest('.card').dataset.slug);
+    const act = btn.dataset.act;
+    if (act === 'copy') {
+      const url = `${location.origin}/${event.slug}`;
+      try { await navigator.clipboard.writeText(url); toast('Link copiado'); } catch { prompt('Copiá el link:', url); }
+    }
+    if (act === 'edit') openForm(event);
+    if (act === 'picks') openPicks(event);
+    if (act === 'delete') {
+      if (!confirm(`¿Eliminar “${event.title}”?\n\nSe borra la galería y las favoritas que hayan guardado. Las fotos de Drive no se tocan.`)) return;
+      try { await api(`/events/${event.slug}`, { method: 'DELETE' }); toast('Galería eliminada'); load(); } catch (e) { alert(e.message); }
+    }
+  });
+
+  /* ---------- crear / editar ---------- */
+  const dlg = $('#dlg');
+  let editing = null;
+  let slugTouched = false;
+  let originalLink = '';
+
+  $('#host').textContent = `${location.host}/`;
+
+  function setStatus(text, kind = '') { const s = $('#status'); s.textContent = text; s.className = `status ${kind}`; }
+
+  function openForm(event = null) {
+    editing = event;
+    slugTouched = Boolean(event);
+    $('#dlgTitle').textContent = event ? 'Editar galería' : 'Nueva galería';
+    $('#title').value = event ? event.title : '';
+    $('#subtitle').value = event ? event.subtitle : '';
+    $('#date').value = event ? event.date : '';
+    originalLink = event && event.folderId ? driveLink(event.folderId) : '';
+    $('#link').value = originalLink;
+    $('#link').required = !(event && event.demo);
+    $('#slug').value = event ? event.slug : '';
+    $('#slug').readOnly = Boolean(event);
+    $('#slugHint').hidden = Boolean(event);
+    $('#selections').checked = event ? event.selections : false;
+    $('#sort').value = event ? event.sort : 'name';
+    $('#cover').value = event ? event.cover : '';
+    $('#active').checked = event ? event.active : true;
+    $('#formErr').textContent = '';
+    setStatus('');
+    dlg.showModal();
+    if (!event) $('#title').focus();
+  }
+
+  $('#new').onclick = () => openForm();
+  $('#cancel').onclick = () => dlg.close();
+  $('#title').addEventListener('input', () => { if (!slugTouched) $('#slug').value = slugify($('#title').value); });
+  $('#slug').addEventListener('input', () => { slugTouched = true; $('#slug').value = slugify($('#slug').value).replace(/^$/, ''); });
+
+  async function verify() {
+    const link = $('#link').value.trim();
+    if (!link) return setStatus('Pegá el link de la carpeta.', 'bad');
+    setStatus('Verificando…');
+    $('#verify').disabled = true;
+    try {
+      const r = await api('/check', { method: 'POST', body: { link } });
+      if (!r.ok) { setStatus(r.message, 'bad'); return false; }
+      setStatus(`✓ Carpeta “${r.name}” · ${r.count} ${r.count === 1 ? 'foto' : 'fotos'}`, 'ok');
+      if (!$('#title').value.trim()) { $('#title').value = r.name; $('#title').dispatchEvent(new Event('input')); }
+      return true;
+    } catch (e) { setStatus(e.message, 'bad'); return false; } finally { $('#verify').disabled = false; }
+  }
+  $('#verify').onclick = verify;
+  $('#link').addEventListener('change', () => { if ($('#link').value.trim() && $('#link').value.trim() !== originalLink) verify(); });
+
+  $('#form').onsubmit = async (ev) => {
+    ev.preventDefault();
+    const body = {
+      title: $('#title').value, subtitle: $('#subtitle').value, date: $('#date').value, cover: $('#cover').value,
+      sort: $('#sort').value, selections: $('#selections').checked, active: $('#active').checked,
+    };
+    const link = $('#link').value.trim();
+    $('#save').disabled = true; $('#formErr').textContent = '';
+    try {
+      if (editing) {
+        if (link && link !== originalLink) body.link = link;
+        await api(`/events/${editing.slug}`, { method: 'PUT', body });
+        toast('Cambios guardados');
+      } else {
+        const r = await api('/events', { method: 'POST', body: { ...body, link, slug: $('#slug').value } });
+        toast(`Galería creada · ${r.check.count} fotos`);
+      }
+      dlg.close();
+      load();
+    } catch (e) { $('#formErr').textContent = e.message; } finally { $('#save').disabled = false; }
+  };
+
+  /* ---------- elecciones ---------- */
+  const sel = $('#sel');
+  let current = null;
+
+  const tile = (p, badge = '') => p.thumb
+    ? `<div class="t" title="${esc(p.name)}"><img loading="lazy" referrerpolicy="no-referrer" src="${esc(p.thumb)}" alt="">${badge}<span>${esc(code(p.name))}</span></div>`
+    : '<div class="t"><span>eliminada</span></div>';
+
+  async function openPicks(event) {
+    current = event;
+    $('#selTitle').textContent = `Favoritas · ${event.title}`;
+    $('#selBody').textContent = 'Cargando…';
+    $('#selCsv').href = `/admin/api/events/${event.slug}/picks.csv`;
+    sel.showModal();
+    try {
+      const r = await api(`/events/${event.slug}/picks`);
+      if (!r.people.length) { $('#selBody').innerHTML = '<p class="meta">Todavía nadie eligió fotos.</p>'; return; }
+      $('#selBody').innerHTML = `
+        <p class="meta">${r.people.length} ${r.people.length === 1 ? 'persona eligió' : 'personas eligieron'} · ${r.distinct} fotos distintas</p>
+        ${r.popular.length ? `<h5>Elegidas por más de una persona</h5><div class="thumbs">${r.popular.map((p) => tile(p, `<b>${p.people}</b>`)).join('')}</div>` : ''}
+        <h5>Por persona</h5>
+        ${r.people.map((person) => `
+          <section class="person">
+            <header><h4>${esc(person.who)} <span>· ${person.count} fotos</span></h4>
+              <button class="btn" data-codes="${esc(person.photos.filter((p) => p.name).map((p) => code(p.name)).join('\n'))}">Copiar códigos</button></header>
+            <div class="thumbs">${person.photos.map((p) => tile(p)).join('')}</div>
+          </section>`).join('')}`;
+    } catch (e) { $('#selBody').textContent = e.message; }
+  }
+
+  $('#selBody').addEventListener('click', async (ev) => {
+    const b = ev.target.closest('[data-codes]');
+    if (!b) return;
+    try { await navigator.clipboard.writeText(b.dataset.codes); const t = b.textContent; b.textContent = '¡Copiado!'; setTimeout(() => { b.textContent = t; }, 1500); } catch { prompt('Copiá los códigos:', b.dataset.codes); }
+  });
+  $('#selClose').onclick = () => sel.close();
+  $('#selClear').onclick = async () => {
+    if (!confirm(`¿Borrar todas las elecciones de “${current.title}”?\n\nNo se puede deshacer. Descargá el CSV antes si lo necesitás.`)) return;
+    try { await api(`/events/${current.slug}/picks`, { method: 'DELETE' }); toast('Elecciones borradas'); sel.close(); load(); } catch (e) { alert(e.message); }
+  };
+
+  $('#logout').onclick = async () => { await fetch('/admin/logout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' }); location.href = '/'; };
+
+  load();
+})();
+</script>
+</body>
+</html>

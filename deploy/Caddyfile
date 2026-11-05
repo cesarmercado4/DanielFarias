@@ -1,0 +1,9 @@
+# Caddy saca solo el certificado HTTPS. Reemplazá el dominio por el real.
+tusfotos.com.ar {
+	encode gzip
+	reverse_proxy 127.0.0.1:3000
+}
+
+www.tusfotos.com.ar {
+	redir https://tusfotos.com.ar{uri} permanent
+}

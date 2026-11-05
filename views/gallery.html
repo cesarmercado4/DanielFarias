@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Google rechaza las imágenes cuando llegan con "Referer" de otra página y muchas juntas: se piden sin él. -->
+<meta name="referrer" content="no-referrer">
+<!--META-->
+<link rel="icon" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #faf8f5;
+    --ink: #1f1b17;
+    --muted: #7a7168;
+    --line: #e7e1d9;
+    --ph: #ebe6df;
+    --serif: 'Cormorant Garamond', Georgia, serif;
+    --sans: 'Inter', system-ui, sans-serif;
+    --row-h: 240px;
+  }
+  @media (max-width: 640px) { :root { --row-h: 150px; } }
+
+  * { box-sizing: border-box; margin: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--ink); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+  button, a { font: inherit; color: inherit; }
+  button { background: none; border: 0; cursor: pointer; }
+
+  /* ---------- portada ---------- */
+  .hero {
+    position: relative; height: 100svh; min-height: 480px;
+    display: grid; place-items: center; text-align: center; color: #fff;
+    background: #2a2622 center / cover no-repeat;
+  }
+  .hero::before { content: ''; position: absolute; inset: 0; background: linear-gradient(rgba(0,0,0,.25), rgba(0,0,0,.5)); }
+  .hero > * { position: relative; }
+  .hero .kicker { font-size: 13px; letter-spacing: .32em; text-transform: uppercase; opacity: .9; }
+  .hero h1 { font-family: var(--serif); font-weight: 500; font-size: clamp(48px, 11vw, 120px); line-height: 1; margin: 18px 24px 16px; }
+  .hero .date { font-family: var(--serif); font-size: clamp(18px, 3vw, 26px); font-style: italic; opacity: .92; }
+  .hero .go {
+    display: inline-block; margin-top: 44px; padding: 14px 30px; border: 1px solid rgba(255,255,255,.7);
+    font-size: 12px; letter-spacing: .22em; text-transform: uppercase; text-decoration: none; transition: background .2s, color .2s;
+  }
+  .hero .go:hover { background: #fff; color: var(--ink); }
+
+  /* ---------- barra ---------- */
+  .bar {
+    position: sticky; top: 0; z-index: 5; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 12px 20px; background: rgba(250,248,245,.92); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line);
+  }
+  .bar .name { font-family: var(--serif); font-size: 22px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bar .count { color: var(--muted); font-size: 13px; margin-left: 10px; font-family: var(--sans); font-weight: 400; }
+  .actions { display: flex; gap: 8px; flex-shrink: 0; }
+  .btn {
+    padding: 9px 16px; border: 1px solid var(--line); border-radius: 999px; font-size: 13px; text-decoration: none; background: #fff;
+    transition: border-color .2s;
+  }
+  .btn:hover { border-color: var(--ink); }
+  @media (max-width: 640px) { .btn.long { display: none; } .bar .count { display: none; } }
+
+  /* ---------- grilla ---------- */
+  .grid { display: flex; flex-wrap: wrap; gap: 6px; padding: 6px; max-width: 1800px; margin: 0 auto; }
+  .grid::after { content: ''; flex-grow: 1000; }
+  .ph {
+    position: relative; overflow: hidden; background: var(--ph); cursor: zoom-in;
+    flex-grow: calc(var(--ar) * 100); flex-basis: calc(var(--ar) * var(--row-h));
+  }
+  .ph i { display: block; padding-bottom: calc(100% / var(--ar)); }
+  .ph img {
+    position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0;
+    transition: opacity .5s, transform .5s;
+  }
+  .ph img.in { opacity: 1; }
+  .ph:hover img { transform: scale(1.03); }
+  .ph .code {
+    position: absolute; z-index: 1; left: 6px; bottom: 6px; padding: 2px 7px; border-radius: 999px;
+    font-size: 10px; letter-spacing: .03em; color: #fff; background: rgba(0,0,0,.5); pointer-events: none;
+  }
+
+  /* ---------- favoritas (solo en galerías con "selections": true) ---------- */
+  [hidden] { display: none !important; }
+  .heart {
+    position: absolute; z-index: 1; top: 6px; right: 6px; width: 34px; height: 34px; border-radius: 50%;
+    display: grid; place-items: center; color: #fff; background: rgba(0,0,0,.35); transition: background .2s, color .2s, transform .15s;
+  }
+  .heart svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; }
+  .heart:active { transform: scale(.88); }
+  .heart.on { background: #fff; color: #e5484d; }
+  .heart.on svg { fill: currentColor; }
+  .only-picks .ph:not(.is-pick) { display: none; }
+  .btn.active { background: #e5484d; border-color: #e5484d; color: #fff; }
+  .btn.chip { max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .lb-top .btn.lb-heart.on { background: #fff; color: #e5484d; border-color: #fff; }
+  @media (max-width: 640px) { .btn .w { display: none; } .btn.chip { max-width: 84px; } }
+
+  .ask { position: fixed; inset: 0; z-index: 40; background: rgba(0,0,0,.55); display: grid; place-items: center; padding: 20px; }
+  .ask-box { background: #fff; border-radius: 14px; padding: 24px; width: min(380px, 100%); display: grid; gap: 12px; }
+  .ask-box h2 { font-family: var(--serif); font-size: 28px; font-weight: 600; }
+  .ask-box p { color: var(--muted); font-size: 14px; line-height: 1.45; }
+  .ask-box input { font: inherit; padding: 11px 14px; border: 1px solid var(--line); border-radius: 10px; width: 100%; }
+  .ask-box .row { display: flex; gap: 8px; justify-content: flex-end; }
+  .btn.dark { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+  .msg { min-height: 100svh; display: grid; place-items: center; text-align: center; padding: 24px; }
+  .msg h1 { font-family: var(--serif); font-weight: 500; font-size: clamp(36px, 7vw, 64px); }
+  .msg p { color: var(--muted); margin-top: 12px; }
+
+  footer { text-align: center; padding: 56px 20px 64px; color: var(--muted); font-size: 13px; }
+  footer .brand { font-family: var(--serif); font-size: 22px; color: var(--ink); margin-bottom: 6px; }
+  footer a { color: inherit; }
+
+  /* ---------- visor ---------- */
+  .lb { position: fixed; inset: 0; z-index: 20; background: #0c0a08; display: none; touch-action: pan-y; }
+  .lb.open { display: block; }
+  .lb-stage { position: absolute; inset: 56px 0 0; display: grid; place-items: center; }
+  .lb-stage img { display: block; object-fit: contain; user-select: none; -webkit-user-drag: none; transition: filter .35s; }
+  .lb-stage img.soft { filter: blur(10px); }
+  .lb-top { position: absolute; z-index: 2; top: 0; left: 0; right: 0; height: 56px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; color: #fff; }
+  .lb-top .n { font-size: 13px; opacity: .7; }
+  .lb-top .actions .btn { background: transparent; color: #fff; border-color: rgba(255,255,255,.3); }
+  .lb-top .actions .btn:hover { border-color: #fff; }
+  .nav {
+    position: absolute; z-index: 2; top: 50%; transform: translateY(-50%); width: 56px; height: 96px; color: #fff; font-size: 40px; opacity: .6;
+    display: grid; place-items: center;
+  }
+  .nav:hover { opacity: 1; }
+  .nav.prev { left: 4px; } .nav.next { right: 4px; }
+  @media (max-width: 640px) { .nav { display: none; } }
+
+  .toast {
+    position: fixed; left: 50%; bottom: 28px; transform: translate(-50%, 20px); background: var(--ink); color: #fff;
+    padding: 10px 18px; border-radius: 999px; font-size: 13px; opacity: 0; pointer-events: none; transition: .3s; z-index: 30;
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Visor de fotos">
+  <div class="lb-top">
+    <span class="n" id="lbN"></span>
+    <div class="actions">
+      <button class="btn lb-heart" id="lbHeart" hidden>♥ Favorita</button>
+      <a class="btn" id="lbDl" href="#" rel="noopener">Descargar</a>
+      <button class="btn" id="lbClose" aria-label="Cerrar">Cerrar ✕</button>
+    </div>
+  </div>
+  <button class="nav prev" id="lbPrev" aria-label="Anterior">‹</button>
+  <div class="lb-stage"><img id="lbImg" alt=""></div>
+  <button class="nav next" id="lbNext" aria-label="Siguiente">›</button>
+</div>
+<div class="toast" id="toast"></div>
+<div class="ask" id="ask" hidden>
+  <form class="ask-box" id="askForm">
+    <h2>¿Quién elige?</h2>
+    <p>Escribí tu nombre. Así el fotógrafo sabe qué fotos marcaste como favoritas.</p>
+    <input id="askName" maxlength="40" placeholder="Tu nombre" autocomplete="name" required>
+    <div class="row">
+      <button type="button" class="btn" id="askCancel">Cancelar</button>
+      <button class="btn dark">Listo</button>
+    </div>
+  </form>
+</div>
+
+<script>
+window.__DATA__ = /*__DATA__*/null;
+
+(function () {
+  const data = window.__DATA__;
+  const app = document.getElementById('app');
+  const el = (html) => { const t = document.createElement('template'); t.innerHTML = html.trim(); return t.content.firstChild; };
+  const code = (name) => name.replace(/\.[^.]+$/, ''); // "IMG_0412.jpg" -> "IMG_0412"
+  const bust = (src, n) => `${src}${src.includes('?') ? '&' : '?'}r=${n}`;
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+  /* ----- pantallas sin galería ----- */
+  if (!data.event) {
+    const text = {
+      notfound: ['No encontramos esta galería', 'Revisá que el link esté bien escrito.'],
+      unavailable: ['La galería no está disponible', 'Probá de nuevo en unos minutos.'],
+    }[data.error] || [data.brand.name, 'Ingresá con el link de tu galería.'];
+    app.append(el(`<div class="msg"><div><h1>${esc(text[0])}</h1><p>${esc(text[1])}</p></div></div>`));
+    return;
+  }
+
+  const { event, photos, brand } = data;
+  const sel = event.selections; // ¿esta galería permite marcar favoritas?
+  const heartSvg = '<svg viewBox="0 0 24 24"><path d="M12 21s-7-4.6-9.3-9A5.3 5.3 0 0 1 12 6.3 5.3 5.3 0 0 1 21.3 12C19 16.4 12 21 12 21z"/></svg>';
+
+  /* ----- portada + barra + grilla ----- */
+  app.append(el(`
+    <header class="hero" style="${data.cover ? `background-image:url('${esc(data.cover)}')` : ''}">
+      <div>
+        ${event.subtitle ? `<div class="kicker">${esc(event.subtitle)}</div>` : ''}
+        <h1>${esc(event.title)}</h1>
+        ${event.date ? `<div class="date">${esc(event.date)}</div>` : ''}
+        <a class="go" href="#fotos">Ver fotos</a>
+      </div>
+    </header>`));
+
+  const actions = [];
+  if (sel) {
+    actions.push(`<button class="btn chip" id="who" hidden></button>`);
+    actions.push(`<button class="btn" id="favs">♥ <span id="favN">0</span><span class="w"> favoritas</span></button>`);
+  }
+  if (event.driveUrl) actions.push(`<a class="btn long" href="${esc(event.driveUrl)}" target="_blank" rel="noopener">Descargar todas</a>`);
+  actions.push(`<button class="btn" id="share">Compartir</button>`);
+  app.append(el(`
+    <div class="bar" id="fotos">
+      <div class="name">${esc(event.title)}<span class="count">${photos.length} fotos</span></div>
+      <div class="actions">${actions.join('')}</div>
+    </div>`));
+
+  const grid = el('<main class="grid"></main>');
+  photos.forEach((p, i) => {
+    const cell = el(`<div class="ph" style="--ar:${(p.w / p.h).toFixed(4)}" data-i="${i}"><i></i><span class="code">${esc(code(p.name))}</span>${sel ? `<button class="heart" aria-label="Marcar como favorita">${heartSvg}</button>` : ''}</div>`);
+    const img = new Image();
+    img.alt = p.name;
+    img.loading = 'lazy';
+    img.decoding = 'async';
+    let tries = 0;
+    img.onload = () => img.classList.add('in');
+    // Drive a veces limita los pedidos en ráfaga: reintentamos con espera.
+    img.onerror = () => { if (tries++ < 3) setTimeout(() => { img.src = bust(p.thumb, tries); }, 800 * tries); };
+    img.src = p.thumb;
+    cell.append(img);
+    grid.append(cell);
+  });
+  app.append(grid);
+
+  app.append(el(`
+    <footer>
+      <div class="brand">${esc(brand.name)}</div>
+      ${brand.instagram ? `<a href="https://instagram.com/${esc(brand.instagram)}" target="_blank" rel="noopener">@${esc(brand.instagram)}</a>` : ''}
+    </footer>`));
+
+  /* ----- compartir ----- */
+  const toast = document.getElementById('toast');
+  function say(msg) {
+    toast.textContent = msg; toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2000);
+  }
+  document.getElementById('share').onclick = async () => {
+    const url = location.href.split('#')[0];
+    if (navigator.share) { try { await navigator.share({ title: event.title, url }); return; } catch (e) { if (e.name === 'AbortError') return; } }
+    try { await navigator.clipboard.writeText(url); say('Link copiado'); } catch { say(url); }
+  };
+
+  /* ----- favoritas ----- */
+  const picks = new Set(); // ids de las fotos marcadas por esta persona
+  let who = '';
+  try { who = localStorage.getItem('tf:who') || ''; } catch {}
+
+  const cellOf = (i) => grid.children[i];
+  function paint(i) {
+    const on = picks.has(photos[i].id);
+    cellOf(i).classList.toggle('is-pick', on);
+    cellOf(i).querySelector('.heart').classList.toggle('on', on);
+    if (document.getElementById('lb').classList.contains('open') && i === cur) document.getElementById('lbHeart').classList.toggle('on', on);
+  }
+  function paintAll() {
+    photos.forEach((_, i) => paint(i));
+    document.getElementById('favN').textContent = picks.size;
+    const chip = document.getElementById('who');
+    chip.hidden = !who;
+    chip.textContent = `${who} ✎`;
+    if (!picks.size) setOnlyPicks(false);
+  }
+  function setOnlyPicks(on) {
+    grid.classList.toggle('only-picks', on);
+    document.getElementById('favs').classList.toggle('active', on);
+  }
+
+  async function loadPicks() {
+    picks.clear();
+    if (who) {
+      try {
+        const r = await fetch(`/api/select?slug=${encodeURIComponent(event.slug)}&who=${encodeURIComponent(who)}`);
+        ((await r.json()).picks || []).forEach((id) => picks.add(id));
+      } catch {}
+    }
+    paintAll();
+  }
+
+  // Pide el nombre; devuelve el texto o '' si cancelan.
+  function askName(prefill = '') {
+    const box = document.getElementById('ask');
+    const input = document.getElementById('askName');
+    input.value = prefill;
+    box.hidden = false;
+    input.focus();
+    return new Promise((resolve) => {
+      const done = (v) => { box.hidden = true; document.getElementById('askForm').onsubmit = null; document.getElementById('askCancel').onclick = null; resolve(v); };
+      document.getElementById('askForm').onsubmit = (e) => { e.preventDefault(); done(input.value.replace(/\s+/g, ' ').trim()); };
+      document.getElementById('askCancel').onclick = () => done('');
+    });
+  }
+  function setWho(name) {
+    who = name;
+    try { localStorage.setItem('tf:who', name); } catch {}
+  }
+
+  async function toggle(i) {
+    if (!who) {
+      const name = await askName();
+      if (!name) return;
+      setWho(name);
+      await loadPicks(); // si ya había elegido con ese nombre, se recuperan
+    }
+    const id = photos[i].id;
+    const on = !picks.has(id);
+    on ? picks.add(id) : picks.delete(id);
+    paintAll();
+    try {
+      const r = await fetch('/api/select', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ slug: event.slug, who, photo: id, on }),
+      });
+      if (!r.ok) throw new Error(r.status);
+    } catch {
+      on ? picks.delete(id) : picks.add(id);
+      paintAll();
+      say('No se pudo guardar. Probá de nuevo.');
+    }
+  }
+
+  if (sel) {
+    document.getElementById('favs').onclick = () => {
+      if (!picks.size) return say('Tocá el corazón de una foto para marcarla.');
+      setOnlyPicks(!grid.classList.contains('only-picks'));
+      document.getElementById('fotos').scrollIntoView();
+    };
+    document.getElementById('who').onclick = async () => {
+      const name = await askName(who);
+      if (!name || name === who) return;
+      setWho(name);
+      await loadPicks();
+    };
+    document.getElementById('lbHeart').hidden = false;
+    document.getElementById('lbHeart').onclick = () => toggle(cur);
+  }
+
+  /* ----- visor ----- */
+  const lb = document.getElementById('lb');
+  const lbImg = document.getElementById('lbImg');
+  let cur = -1;
+
+  // Tamaño final de la foto dentro del visor, calculado con sus medidas reales,
+  // así la miniatura y la versión grande ocupan el mismo lugar y no hay saltos.
+  function fit(p) {
+    const stage = lbImg.parentElement;
+    const k = Math.min(stage.clientWidth / p.w, stage.clientHeight / p.h);
+    lbImg.style.width = `${Math.round(p.w * k)}px`;
+    lbImg.style.height = `${Math.round(p.h * k)}px`;
+  }
+
+  // Descarga una imagen; si Drive la rechaza (pasa cuando llegan muchos pedidos juntos)
+  // reintenta unas veces con espera. Devuelve la URL que terminó cargando.
+  function load(src) {
+    return new Promise((resolve, reject) => {
+      let tries = 0;
+      const attempt = () => {
+        const url = tries ? bust(src, tries) : src;
+        const im = new Image();
+        im.onload = () => resolve(url);
+        im.onerror = () => { if (++tries > 3) reject(new Error(src)); else setTimeout(attempt, 700 * tries); };
+        im.src = url;
+      };
+      attempt();
+    });
+  }
+
+  let token = 0;
+  let fullTimer;
+
+  function show(i) {
+    cur = (i + photos.length) % photos.length;
+    const p = photos[cur];
+    const mine = ++token; // si el usuario pasa a otra foto, los pedidos de esta quedan descartados
+    fit(p);
+    lbImg.classList.add('soft');
+    lbImg.src = p.thumb; // se ve de inmediato (ya está en caché), desenfocada, hasta que llega la grande
+    document.getElementById('lbN').textContent = `${cur + 1} / ${photos.length} · ${code(p.name)}`;
+    document.getElementById('lbDl').href = p.download;
+    document.getElementById('lbHeart').classList.toggle('on', picks.has(p.id));
+
+    // Si la miniatura no estaba cargada, la pedimos de nuevo hasta que llegue.
+    load(p.thumb).then((url) => { if (mine === token && lbImg.classList.contains('soft')) lbImg.src = url; }).catch(() => {});
+
+    // La grande se pide recién cuando el usuario se queda en la foto, así pasar rápido no satura a Drive.
+    clearTimeout(fullTimer);
+    fullTimer = setTimeout(() => {
+      load(p.full)
+        .then((url) => {
+          if (mine !== token) return;
+          lbImg.src = url;
+          lbImg.classList.remove('soft');
+          [cur + 1, cur - 1].forEach((j) => load(photos[(j + photos.length) % photos.length].full).catch(() => {}));
+        })
+        .catch(() => { if (mine === token) lbImg.classList.remove('soft'); });
+    }, 150);
+  }
+  // Siguiente (+1) o anterior (-1); con el filtro de favoritas activo salta solo entre ellas.
+  function step(d) {
+    if (grid.classList.contains('only-picks')) {
+      const n = photos.length;
+      for (let k = 1; k <= n; k++) {
+        const j = (((cur + d * k) % n) + n) % n;
+        if (picks.has(photos[j].id)) return show(j);
+      }
+    }
+    show(cur + d);
+  }
+  function open(i) {
+    if (!lb.classList.contains('open')) {
+      lb.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      history.pushState({ lb: 1 }, '');
+    }
+    show(i);
+  }
+  function close() {
+    if (!lb.classList.contains('open')) return;
+    lb.classList.remove('open');
+    document.body.style.overflow = '';
+    if (history.state && history.state.lb) history.back();
+  }
+
+  grid.addEventListener('click', (e) => {
+    const c = e.target.closest('.ph');
+    if (!c) return;
+    if (e.target.closest('.heart')) return toggle(+c.dataset.i);
+    open(+c.dataset.i);
+  });
+  document.getElementById('lbClose').onclick = close;
+  document.getElementById('lbPrev').onclick = () => step(-1);
+  document.getElementById('lbNext').onclick = () => step(1);
+  lb.addEventListener('click', (e) => { if (e.target === lb || e.target.classList.contains('lb-stage')) close(); });
+  window.addEventListener('resize', () => { if (lb.classList.contains('open')) fit(photos[cur]); });
+  window.addEventListener('popstate', () => { if (lb.classList.contains('open')) { lb.classList.remove('open'); document.body.style.overflow = ''; } });
+  document.addEventListener('keydown', (e) => {
+    if (!lb.classList.contains('open')) return;
+    if (e.key === 'Escape') close();
+    if (e.key === 'ArrowLeft') step(-1);
+    if (e.key === 'ArrowRight') step(1);
+  });
+
+  let x0 = null;
+  lb.addEventListener('touchstart', (e) => { x0 = e.touches[0].clientX; }, { passive: true });
+  lb.addEventListener('touchend', (e) => {
+    if (x0 === null) return;
+    const dx = e.changedTouches[0].clientX - x0;
+    if (Math.abs(dx) > 50) step(dx < 0 ? 1 : -1);
+    x0 = null;
+  });
+
+  if (sel) loadPicks();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Ingresar</title>
+<link rel="icon" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,400&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --teal: #224241; --cream: #ebe6e2; --gold: #c79a71; --gold2: #ac946c; --ink: #1c1a14; --serif: 'Cormorant Garamond', Georgia, serif; --sans: 'Montserrat', system-ui, sans-serif; }
+  * { box-sizing: border-box; margin: 0; }
+  body { background: radial-gradient(900px 600px at 80% 10%, #2f5a58, transparent 65%), var(--teal); color: #fff; font-family: var(--sans); min-height: 100svh; display: grid; place-items: center; padding: 20px; }
+  form { width: min(400px, 100%); background: var(--cream); color: var(--ink); padding: 34px 30px 30px; display: grid; gap: 14px; box-shadow: 0 30px 80px rgba(0,0,0,.4); }
+  .logo { width: 190px; height: 44px; overflow: hidden; line-height: 0; justify-self: center; background: var(--teal); margin-bottom: 6px; }
+  .logo img { width: 190px; height: 190px; margin-top: -73px; display: block; }
+  h1 { font-family: var(--serif); font-weight: 500; font-size: 40px; color: var(--teal); text-align: center; line-height: 1.1; }
+  h1 em { font-weight: 400; color: var(--gold2); }
+  p { color: #5b5044; font-size: 13px; text-align: center; }
+  input { font: inherit; font-size: 15px; padding: 14px 16px; border: 1px solid rgba(54,37,22,.25); border-radius: 2px; width: 100%; background: #fff; outline: none; }
+  input:focus { border-color: var(--teal); }
+  button { font: inherit; font-size: 11px; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; padding: 15px; border: 0; border-radius: 2px; background: var(--gold); color: var(--ink); cursor: pointer; transition: background .2s, color .2s; }
+  button:hover:not(:disabled) { background: var(--teal); color: #fff; }
+  button:disabled { opacity: .6; cursor: default; }
+  .err { color: #b5443f; font-size: 13px; min-height: 18px; text-align: center; }
+  a { color: #5b5044; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; text-align: center; text-decoration: none; }
+  a:hover { color: var(--teal); }
+</style>
+</head>
+<body>
+<form id="form">
+  <div class="logo"><img src="/logo.jpg" alt="Daniel Farias" width="190" height="190"></div>
+  <h1>Panel de <em>galerías</em></h1>
+  <p>Ingresá con tu contraseña para administrar las galerías.</p>
+  <input type="password" id="password" placeholder="Contraseña" autocomplete="current-password" autofocus required>
+  <div class="err" id="err" role="alert"></div>
+  <button id="go">Entrar</button>
+  <a href="/">← Volver al sitio</a>
+</form>
+<script>
+  document.getElementById('form').onsubmit = async (e) => {
+    e.preventDefault();
+    const go = document.getElementById('go');
+    const err = document.getElementById('err');
+    go.disabled = true; err.textContent = '';
+    try {
+      const r = await fetch('/admin/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: document.getElementById('password').value }) });
+      if (r.ok) return (location.href = '/admin');
+      err.textContent = (await r.json().catch(() => ({}))).message || 'No se pudo ingresar.';
+    } catch { err.textContent = 'No hay conexión con el servidor.'; }
+    go.disabled = false;
+  };
+</script>
+</body>
+</html>

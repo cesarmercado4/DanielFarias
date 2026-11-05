@@ -1,0 +1,29 @@
+{
+  "brand": {
+    "name": "Tu Estudio Fotográfico",
+    "instagram": "",
+    "whatsapp": ""
+  },
+  "events": {
+    "bodadebetoypaula": {
+      "title": "Beto & Paula",
+      "subtitle": "Casamiento",
+      "date": "2026-10-17",
+      "folderId": "1k_lR8z2M3I6scjIy11mqPH3aXFBcCyN8",
+      "selections": true
+    },
+    "prueba": {
+      "title": "Mi prueba",
+      "subtitle": "Galería",
+      "date": "2026-11-04",
+      "folderId": "1S1F1tRevxvCIHEF8xROhg_vMua2-WFPd"
+    },
+    "demo": {
+      "title": "Galería de ejemplo",
+      "subtitle": "Demo",
+      "date": "2026-11-04",
+      "demo": true,
+      "selections": true
+    }
+  }
+}
