@@ -14,8 +14,8 @@
   * { box-sizing: border-box; margin: 0; }
   body { background: radial-gradient(900px 600px at 80% 10%, #2f5a58, transparent 65%), var(--teal); color: #fff; font-family: var(--sans); min-height: 100svh; display: grid; place-items: center; padding: 20px; }
   form { width: min(400px, 100%); background: var(--cream); color: var(--ink); padding: 34px 30px 30px; display: grid; gap: 14px; box-shadow: 0 30px 80px rgba(0,0,0,.4); }
-  .logo { width: 190px; height: 44px; overflow: hidden; line-height: 0; justify-self: center; background: var(--teal); margin-bottom: 6px; }
-  .logo img { width: 190px; height: 190px; margin-top: -73px; display: block; }
+  .logo { justify-self: center; line-height: 0; margin: 4px 0 10px; }
+  .logo img { height: 34px; width: auto; display: block; }
   h1 { font-family: var(--serif); font-weight: 500; font-size: 40px; color: var(--teal); text-align: center; line-height: 1.1; }
   h1 em { font-weight: 400; color: var(--gold2); }
   p { color: #5b5044; font-size: 13px; text-align: center; }
@@ -31,7 +31,7 @@
 </head>
 <body>
 <form id="form">
-  <div class="logo"><img src="/logo.jpg" alt="Daniel Farias" width="190" height="190"></div>
+  <div class="logo"><img src="/logo-negro.png" alt="Daniel Farias" width="206" height="33"></div>
   <h1>Panel de <em>galerías</em></h1>
   <p>Ingresá con tu contraseña para administrar las galerías.</p>
   <input type="password" id="password" placeholder="Contraseña" autocomplete="current-password" autofocus required>

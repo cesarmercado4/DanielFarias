@@ -81,12 +81,15 @@ function homePage(res) {
     NAME: brand.name, SHORT: brand.short, TAGLINE: brand.tagline, LOCATION: brand.location,
     INSTAGRAM: brand.instagram, WHATSAPP: brand.whatsapp,
   };
-  let photos = [];
-  try {
-    photos = fs.readdirSync(path.join(config.root, 'public', 'portfolio'))
-      .filter((f) => /\.(jpe?g|png|webp|avif)$/i.test(f)).sort()
-      .map((f) => '/portfolio/' + encodeURIComponent(f));
-  } catch { /* sin carpeta: se muestran fondos de color */ }
+  // Fotos del portfolio: public/portfolio/bodas y public/portfolio/quince (sin carpeta: se muestran fondos de color)
+  const photos = {};
+  for (const group of ['bodas', 'quince']) {
+    try {
+      photos[group] = fs.readdirSync(path.join(config.root, 'public', 'portfolio', group))
+        .filter((f) => /\.(jpe?g|png|webp|avif)$/i.test(f)).sort()
+        .map((f) => `/portfolio/${group}/${encodeURIComponent(f)}`);
+    } catch { photos[group] = []; }
+  }
   const page = view('home.html').replace(/\{\{(\w+)\}\}/g, (_, key) =>
     key === 'PHOTOS' ? JSON.stringify(photos).replace(/</g, '\\u003c') : escapeAttr(values[key] ?? ''));
   html(res, 200, page);

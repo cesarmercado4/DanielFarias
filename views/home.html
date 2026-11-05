@@ -7,7 +7,7 @@
 <meta name="description" content="{{TAGLINE}} · {{LOCATION}}. Mirá y descargá las fotos de tu evento.">
 <meta property="og:title" content="{{NAME}}">
 <meta property="og:description" content="{{TAGLINE}} · {{LOCATION}}">
-<meta property="og:image" content="/portfolio/foto-01.jpg">
+<meta property="og:image" content="/portfolio/bodas/foto-01.jpg">
 <meta name="theme-color" content="#224241">
 <link rel="icon" href="/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -30,9 +30,8 @@
   /* Barra superior */
   .top { position: fixed; inset: 0 0 auto 0; z-index: 20; display: flex; justify-content: space-between; align-items: center; padding: 14px clamp(20px, 5vw, 56px); color: var(--white); transition: background .3s, box-shadow .3s; }
   .top.solid { background: rgba(34,66,65,.94); backdrop-filter: blur(12px); box-shadow: 0 1px 0 rgba(255,255,255,.08); }
-  /* El logo es un cuadrado de 150 px con el isotipo al centro: se recorta la franja del isotipo y el nombre */
-  .logo { display: block; width: 190px; height: 44px; overflow: hidden; line-height: 0; border-radius: 2px; }
-  .logo img { width: 190px; height: 190px; max-width: none; margin-top: -73px; }
+  .logo { display: block; line-height: 0; }
+  .logo img { height: 34px; width: auto; }
   nav { display: flex; align-items: center; gap: 28px; }
   nav a { font-size: 11px; font-weight: 500; letter-spacing: .22em; text-transform: uppercase; text-decoration: none; opacity: .88; transition: opacity .2s, color .2s; }
   nav a:hover { opacity: 1; color: var(--gold); }
@@ -42,29 +41,18 @@
 
   /* Portada */
   .hero { position: relative; min-height: 100svh; background: radial-gradient(900px 600px at 85% 20%, #2f5a58, transparent 65%), var(--teal); color: var(--white); display: flex; align-items: center; overflow: hidden; }
-  .hero .wrap { display: grid; grid-template-columns: 1.05fr 1fr; gap: clamp(28px, 6vw, 80px); align-items: center; padding: 120px 0 80px; }
+  .hero .wrap { display: grid; justify-items: center; text-align: center; padding: 130px 0 90px; }
   .kicker { font-size: 11px; font-weight: 500; letter-spacing: .36em; text-transform: uppercase; color: var(--gold); }
   h1 { font-family: var(--serif); font-weight: 500; font-size: clamp(56px, 9.5vw, 128px); line-height: .94; margin: 22px 0 24px; }
   h1 em { font-style: italic; font-weight: 400; color: var(--gold); }
-  .lead { font-family: var(--serif); font-style: italic; font-size: clamp(21px, 2.6vw, 29px); color: #d6dfdc; max-width: 480px; line-height: 1.35; }
-  .cta { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 38px; }
+  .hero-logo { width: min(820px, 88vw); height: auto; margin: 26px 0 30px; }
+  .lead { font-family: var(--serif); font-style: italic; font-size: clamp(21px, 2.6vw, 29px); color: #d6dfdc; max-width: 560px; line-height: 1.35; }
+  .cta { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-top: 38px; }
   .btn { display: inline-block; padding: 15px 30px; border-radius: 2px; font-size: 11px; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; text-decoration: none; border: 1px solid currentColor; transition: background .25s, color .25s, border-color .25s, transform .25s; }
   .btn:hover { transform: translateY(-2px); }
   .btn.solid { background: var(--gold); border-color: var(--gold); color: var(--night); }
   .btn.solid:hover { background: var(--white); border-color: var(--white); }
   .hero .btn:not(.solid):hover { color: var(--gold); }
-
-  .collage { position: relative; height: min(70vh, 620px); min-height: 440px; }
-  .collage figure { position: absolute; margin: 0; background: var(--cream); padding: 8px; box-shadow: 0 24px 60px rgba(0,0,0,.35); }
-  .collage img { width: 100%; height: 100%; object-fit: cover; }
-  .collage .a { width: 56%; height: 78%; left: 0; top: 4%; transform: rotate(-3deg); z-index: 2; }
-  .collage .b { width: 50%; height: 58%; right: 0; top: 0; transform: rotate(3deg); }
-  .collage .c { width: 44%; height: 44%; right: 6%; bottom: 0; transform: rotate(-1.5deg); z-index: 3; }
-  .collage .empty { background: linear-gradient(150deg, #3b6361, #1a3534); }
-  @media (max-width: 860px) {
-    .hero .wrap { grid-template-columns: 1fr; padding-top: 110px; }
-    .collage { height: 430px; min-height: 0; order: -1; margin-top: 8px; }
-  }
 
   section { padding: clamp(72px, 11vw, 130px) 0; }
   .eyebrow { font-size: 11px; font-weight: 600; letter-spacing: .36em; text-transform: uppercase; color: var(--gold2); }
@@ -81,6 +69,7 @@
 
   /* Sobre mí */
   .about .wrap { display: grid; grid-template-columns: .9fr 1fr; gap: clamp(32px, 7vw, 96px); align-items: center; }
+  .about h2 { font-size: clamp(42px, 6.4vw, 78px); }
   .about p { color: #4a4036; font-size: 16px; margin-top: 22px; max-width: 520px; }
   .about .sign { font-family: var(--serif); font-style: italic; font-size: 30px; color: var(--teal); margin-top: 26px; }
   .frame { position: relative; aspect-ratio: 3/4; max-width: 440px; overflow: hidden; background: var(--teal); }
@@ -100,6 +89,8 @@
   .card a { color: var(--gold); text-decoration: none; }
 
   /* Portfolio */
+  .sub { font-family: var(--serif); font-weight: 500; font-style: italic; font-size: clamp(30px, 4vw, 44px); color: var(--teal); margin: 56px 0 -26px; }
+  .sub::after { content: ""; display: block; width: 56px; height: 1px; background: var(--gold); margin-top: 10px; }
   .grid { columns: 3 250px; column-gap: 14px; margin-top: 52px; }
   .grid figure { break-inside: avoid; margin: 0 0 14px; overflow: hidden; background: var(--cream); }
   .grid img { width: 100%; height: auto; transition: transform .7s ease; }
@@ -127,6 +118,7 @@
   footer a { text-decoration: none; margin: 0 10px; text-transform: uppercase; letter-spacing: .18em; font-size: 11px; }
   footer a:hover { color: var(--gold); }
 
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .reveal { opacity: 0; transform: translateY(26px); transition: opacity .9s ease, transform .9s ease; }
   .reveal.in { opacity: 1; transform: none; }
   @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } html { scroll-behavior: auto; } }
@@ -135,9 +127,9 @@
 <body>
 
 <header class="top" id="top">
-  <a class="logo" href="/" aria-label="{{NAME}}"><img src="/logo.jpg" alt="DF Daniel Farias" width="190" height="190"></a>
+  <a class="logo" href="/" aria-label="{{NAME}}"><img src="/logo-blanco.png" alt="Daniel Farias" width="206" height="34"></a>
   <nav>
-    <a href="#sobre">Sobre mí</a>
+    <a href="#sobre">Nosotros</a>
     <a href="#servicios">Servicios</a>
     <a href="#portfolio">Portfolio</a>
     <a href="#contacto">Contacto</a>
@@ -147,17 +139,13 @@
 
 <div class="hero">
   <div class="wrap">
-    <div>
-      <p class="kicker">{{TAGLINE}} · {{LOCATION}}</p>
-      <h1>Daniel<br><em>Farías</em></h1>
-      <p class="lead">Cada momento, bien contado. Luz natural, emoción real.</p>
-      <div class="cta">
-        <a class="btn solid" href="https://wa.me/{{WHATSAPP}}" target="_blank" rel="noopener">Reservar mi fecha</a>
-        <a class="btn" href="#galeria">Ver mis fotos</a>
-      </div>
-    </div>
-    <div class="collage" id="collage">
-      <figure class="a"></figure><figure class="b"></figure><figure class="c"></figure>
+    <p class="kicker">{{TAGLINE}} · {{LOCATION}}</p>
+    <h1 class="sr">{{NAME}}</h1>
+    <img class="hero-logo" src="/logo-blanco.png" alt="" width="1180" height="192">
+    <p class="lead">Cada momento, bien contado. Luz natural, emoción real.</p>
+    <div class="cta">
+      <a class="btn solid" href="https://wa.me/{{WHATSAPP}}" target="_blank" rel="noopener">Reservar mi fecha</a>
+      <a class="btn" href="#galeria">Ver mis fotos</a>
     </div>
   </div>
 </div>
@@ -165,8 +153,8 @@
 <div class="stats">
   <div class="wrap">
     <div class="stat reveal"><b>15K+</b><span>Seguidores</span></div>
-    <div class="stat reveal"><b>4.600+</b><span>Publicaciones</span></div>
-    <div class="stat reveal"><b>Luz natural</b><span>Mi sello</span></div>
+    <div class="stat reveal"><b>10 años</b><span>Contando historias</span></div>
+    <div class="stat reveal"><b>Momentos reales</b><span>Nuestro sello</span></div>
   </div>
 </div>
 
@@ -174,9 +162,9 @@
   <div class="wrap">
     <div class="frame reveal" id="aboutFrame"></div>
     <div class="reveal">
-      <p class="eyebrow">Sobre mí</p>
-      <h2>Fotos que se <em>sienten</em>, no solo se miran.</h2>
-      <p>Junto a Cin trabajamos con la luz de la tarde y con lo que pasa de verdad: la risa, la mirada, el abrazo. Sesiones pre 15, prebodas, parejas y eventos contados con calidez, para que vuelvas a tu día cada vez que abras las fotos.</p>
+      <p class="eyebrow">Sobre nosotros</p>
+      <h2>Historias reales, recuerdos <em>para siempre</em></h2>
+      <p>Somos Dani y Cin, una pareja de fotógrafos que hace más de 10 años cuenta historias con pasión. Nos gusta capturar momentos reales, llenos de vida, y transformarlos en recuerdos que duren para siempre.</p>
       <p class="sign">Cin &amp; Dani</p>
     </div>
   </div>
@@ -189,10 +177,10 @@
       <h2>Para cada <em>historia</em></h2>
     </div>
     <div class="cards">
-      <div class="card reveal"><i>01</i><h3>Pre 15</h3><p>Sesiones al aire libre para empezar a vivir tu fiesta.</p></div>
-      <div class="card reveal"><i>02</i><h3>Prebodas</h3><p>Una tarde de a dos, con tiempo y sin apuro.</p></div>
-      <div class="card reveal"><i>03</i><h3>Eventos</h3><p>Casamientos, 15 y celebraciones, cada detalle y cada invitado.</p></div>
-      <div class="card reveal"><i>04</i><h3>Selfie Mirror</h3><p>El espejo de fotos para tu evento. Mirá <a href="https://instagram.com/selfie.mirror.gp" target="_blank" rel="noopener">@selfie.mirror.gp</a>.</p></div>
+      <div class="card reveal"><i>01</i><h3>15 años</h3><p>Sesiones y fiesta, para guardar cada momento de tu gran noche.</p></div>
+      <div class="card reveal"><i>02</i><h3>Bodas</h3><p>Del preparativo a la última canción, tu historia contada sin apuro.</p></div>
+      <div class="card reveal"><i>03</i><h3>Celebraciones</h3><p>Cumpleaños, bautismos y reuniones: lo que vale la pena recordar.</p></div>
+      <div class="card reveal"><i>04</i><h3>Empresariales</h3><p>Eventos, equipos y marcas, con una mirada cuidada y profesional.</p></div>
     </div>
   </div>
 </section>
@@ -203,7 +191,10 @@
       <p class="eyebrow">Portfolio</p>
       <h2>Momentos <em>reales</em></h2>
     </div>
-    <div class="grid" id="grid"></div>
+    <h3 class="sub reveal">Bodas</h3>
+    <div class="grid" id="grid-bodas"></div>
+    <h3 class="sub reveal">15 años</h3>
+    <div class="grid" id="grid-quince"></div>
     <div class="more reveal"><a class="btn" href="https://instagram.com/{{INSTAGRAM}}" target="_blank" rel="noopener">Más en Instagram</a></div>
   </div>
 </section>
@@ -237,18 +228,20 @@
 </footer>
 
 <script>
-  // Las fotos son las de /public/portfolio (las lista el servidor).
+  // Las fotos son las de /public/portfolio/bodas y /public/portfolio/quince (las lista el servidor).
   const PHOTOS = {{PHOTOS}};
   const make = (src, alt) => { const im = new Image(); im.src = src; im.alt = alt; im.loading = 'lazy'; im.decoding = 'async'; return im; };
 
-  document.querySelectorAll('#collage figure').forEach((f, i) => {
-    if (PHOTOS[i]) { const im = make(PHOTOS[i], 'Foto de {{NAME}}'); im.loading = 'eager'; f.appendChild(im); } else f.classList.add('empty');
-  });
-  if (PHOTOS.length) document.getElementById('aboutFrame').appendChild(make(PHOTOS[Math.min(1, PHOTOS.length - 1)], 'Foto de {{NAME}}'));
+  const all = [...PHOTOS.bodas, ...PHOTOS.quince];
+  if (all.length) document.getElementById('aboutFrame').appendChild(make(all[0], 'Foto de {{NAME}}'));
 
-  const grid = document.getElementById('grid');
-  if (PHOTOS.length) PHOTOS.forEach(src => { const f = document.createElement('figure'); f.appendChild(make(src, 'Foto de {{NAME}}')); grid.appendChild(f); });
-  else ['Pre 15', 'Prebodas', 'Eventos'].forEach(t => { const d = document.createElement('div'); d.className = 'ph'; d.textContent = t; grid.appendChild(d); });
+  const fill = (id, list, label) => {
+    const grid = document.getElementById(id);
+    if (list.length) list.forEach(src => { const f = document.createElement('figure'); f.appendChild(make(src, 'Foto de ' + label)); grid.appendChild(f); });
+    else { const d = document.createElement('div'); d.className = 'ph'; d.textContent = label; grid.appendChild(d); }
+  };
+  fill('grid-bodas', PHOTOS.bodas, 'Bodas');
+  fill('grid-quince', PHOTOS.quince, '15 años');
 
   const bar = document.getElementById('top');
   const onScroll = () => bar.classList.toggle('solid', scrollY > 60);
