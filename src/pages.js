@@ -81,9 +81,9 @@ function homePage(res) {
     NAME: brand.name, SHORT: brand.short, TAGLINE: brand.tagline, LOCATION: brand.location,
     INSTAGRAM: brand.instagram, WHATSAPP: brand.whatsapp,
   };
-  // Fotos del portfolio: public/portfolio/bodas y public/portfolio/quince (sin carpeta: se muestran fondos de color)
+  // Fotos del portfolio, una carpeta por grupo en public/portfolio (sin carpeta o vacía: se muestran fondos de color)
   const photos = {};
-  for (const group of ['bodas', 'quince']) {
+  for (const group of ['preboda', 'boda', 'sesiones', 'fiesta']) {
     try {
       photos[group] = fs.readdirSync(path.join(config.root, 'public', 'portfolio', group))
         .filter((f) => /\.(jpe?g|png|webp|avif)$/i.test(f)).sort()
