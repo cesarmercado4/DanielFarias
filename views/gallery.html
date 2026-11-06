@@ -64,6 +64,13 @@
   /* ---------- grilla ---------- */
   .grid { display: flex; flex-wrap: wrap; gap: 6px; padding: 6px; max-width: 1800px; margin: 0 auto; }
   .grid::after { content: ''; flex-grow: 1000; }
+  .grid .ph.off { display: none; }
+  .tabs { display: flex; gap: 8px; padding: 14px 16px 4px; max-width: 1800px; margin: 0 auto; overflow-x: auto; scrollbar-width: none; }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tabs button { flex: 0 0 auto; font: 500 14px var(--sans); padding: 9px 18px; border-radius: 999px; border: 1px solid var(--line, #d8d2c8); background: transparent; color: inherit; cursor: pointer; white-space: nowrap; }
+  .tabs button:hover { border-color: currentColor; }
+  .tabs button.on { background: #224241; border-color: #224241; color: #fff; }
+  .tabs button span { opacity: .6; margin-left: 6px; font-size: 12px; }
   .ph {
     position: relative; overflow: hidden; background: var(--ph); cursor: zoom-in;
     flex-grow: calc(var(--ar) * 100); flex-basis: calc(var(--ar) * var(--row-h));
@@ -216,8 +223,13 @@ window.__DATA__ = /*__DATA__*/null;
     </div>`));
 
   const grid = el('<main class="grid"></main>');
+  // Subcarpetas de Drive: se muestran como pestañas y solo se ven las fotos de la elegida.
+  const folders = [...new Set(photos.map((p) => p.folder))];
+  const hasFolders = folders.some(Boolean);
+  let activeFolder = folders[0];
+  const inFolder = (p) => !hasFolders || p.folder === activeFolder;
   photos.forEach((p, i) => {
-    const cell = el(`<div class="ph" style="--ar:${(p.w / p.h).toFixed(4)}" data-i="${i}"><i></i><span class="code">${esc(code(p.name))}</span>${sel ? `<button class="heart" aria-label="Marcar como favorita">${heartSvg}</button>` : ''}</div>`);
+    const cell = el(`<div class="ph${inFolder(p) ? '' : ' off'}" style="--ar:${(p.w / p.h).toFixed(4)}" data-i="${i}"><i></i><span class="code">${esc(code(p.name))}</span>${sel ? `<button class="heart" aria-label="Marcar como favorita">${heartSvg}</button>` : ''}</div>`);
     const img = new Image();
     img.alt = p.name;
     img.loading = 'lazy';
@@ -230,6 +242,26 @@ window.__DATA__ = /*__DATA__*/null;
     cell.append(img);
     grid.append(cell);
   });
+  if (hasFolders) {
+    const tabs = el('<nav class="tabs"></nav>');
+    const countEl = document.querySelector('.bar .count');
+    folders.forEach((f) => {
+      const n = photos.filter((p) => p.folder === f).length;
+      const b = el(`<button type="button">${esc(f || event.title)}<span>${n}</span></button>`);
+      if (f === activeFolder) b.classList.add('on');
+      b.onclick = () => {
+        activeFolder = f;
+        tabs.querySelectorAll('button').forEach((x) => x.classList.toggle('on', x === b));
+        grid.querySelectorAll('.ph').forEach((c) => c.classList.toggle('off', !inFolder(photos[+c.dataset.i])));
+        if (countEl) countEl.textContent = `${n} fotos`;
+        window.scrollTo({ top: Math.min(window.scrollY, document.getElementById('fotos').offsetTop), behavior: 'smooth' });
+      };
+      tabs.append(b);
+    });
+    app.append(tabs);
+    const first = photos.filter((p) => p.folder === activeFolder).length;
+    if (countEl) countEl.textContent = `${first} fotos`;
+  }
   app.append(grid);
 
   app.append(el(`
@@ -407,11 +439,12 @@ window.__DATA__ = /*__DATA__*/null;
   }
   // Siguiente (+1) o anterior (-1); con el filtro de favoritas activo salta solo entre ellas.
   function step(d) {
-    if (grid.classList.contains('only-picks')) {
+    const onlyPicks = grid.classList.contains('only-picks');
+    if (onlyPicks || hasFolders) {
       const n = photos.length;
       for (let k = 1; k <= n; k++) {
         const j = (((cur + d * k) % n) + n) % n;
-        if (picks.has(photos[j].id)) return show(j);
+        if (inFolder(photos[j]) && (!onlyPicks || picks.has(photos[j].id))) return show(j);
       }
     }
     show(cur + d);

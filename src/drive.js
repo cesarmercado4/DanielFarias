@@ -14,13 +14,13 @@ function parseFolderId(input) {
 
 /* ---------- API de Drive ---------- */
 
-async function listImages(folderId) {
+async function listChildren(folderId, query, fields) {
   const files = [];
   let pageToken = '';
   do {
     const params = new URLSearchParams({
-      q: `'${folderId}' in parents and trashed = false and mimeType contains 'image/'`,
-      fields: 'nextPageToken, files(id, name, imageMediaMetadata(width, height, rotation, time))',
+      q: `'${folderId}' in parents and trashed = false and ${query}`,
+      fields,
       orderBy: 'name_natural', // IMG_9 antes que IMG_10
       pageSize: '1000',
       supportsAllDrives: 'true',
@@ -36,6 +36,27 @@ async function listImages(folderId) {
     pageToken = data.nextPageToken;
   } while (pageToken);
   return files;
+}
+
+const listImagesIn = (id) => listChildren(id, "mimeType contains 'image/'", 'nextPageToken, files(id, name, imageMediaMetadata(width, height, rotation, time))');
+const listFoldersIn = (id) => listChildren(id, "mimeType = 'application/vnd.google-apps.folder'", 'nextPageToken, files(id, name)');
+
+// Fotos de la carpeta y de todas sus subcarpetas (hasta 4 niveles y 60 carpetas).
+// Cada foto lleva 'folder' = ruta de la subcarpeta ('' = la carpeta principal).
+async function listImages(rootId) {
+  const out = [];
+  let visited = 0;
+  async function walk(id, pathName, depth) {
+    if (visited++ >= 60) return;
+    const imgs = await listImagesIn(id);
+    imgs.forEach((f) => { f.folder = pathName; });
+    out.push(...imgs);
+    if (depth >= 4) return;
+    const subs = (await listFoldersIn(id)).sort((a, b) => a.name.localeCompare(b.name, 'es', { numeric: true }));
+    for (const sub of subs) await walk(sub.id, pathName ? `${pathName} / ${sub.name}` : sub.name, depth + 1);
+  }
+  await walk(rootId, '', 0);
+  return out;
 }
 
 // Abre la carpeta y cuenta las fotos: sirve para avisar enseguida si el link está mal o no es público.
@@ -67,6 +88,7 @@ function toPhoto(file) {
   return {
     id: file.id,
     name: file.name,
+    folder: file.folder || '',
     w,
     h,
     thumb: thumb(file.id, 640),
@@ -80,7 +102,8 @@ async function fetchDrivePhotos(folderId, sort) {
   if (sort === 'time') {
     // la hora viene como "2026:10:17 14:03:22", se ordena como texto; si falta, queda el orden por nombre
     const when = (f) => (f.imageMediaMetadata && f.imageMediaMetadata.time) || '';
-    files.sort((a, b) => when(a).localeCompare(when(b)));
+    const order = [...new Set(files.map((f) => f.folder))]; // las subcarpetas conservan su orden; se ordena por hora dentro de cada una
+    files.sort((a, b) => order.indexOf(a.folder) - order.indexOf(b.folder) || when(a).localeCompare(when(b)));
   }
   return files.map(toPhoto);
 }
